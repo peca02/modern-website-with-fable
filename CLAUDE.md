@@ -1,0 +1,220 @@
+# Project Overview
+
+A single-page, scroll-driven, real-time 3D marketing site for a fictional deep-tech brand.
+It is a portfolio showpiece: the bar is Awwwards Site of the Day, not "a good landing page".
+Frontend only. No backend, no database, no API routes, no CMS.
+
+Deployment target: Vercel (static output), connected to this GitHub repository by the owner.
+Do not deploy and do not run the Vercel CLI.
+
+## Tech Stack
+
+Exact versions are pinned after installation. Replace every `TBD` below with the
+installed version (from `package.json` / `npm ls`) as soon as the dependency is added.
+
+| Package | Version | Purpose |
+| --- | --- | --- |
+| next (App Router) | TBD | Framework |
+| react / react-dom | TBD | UI |
+| typescript (strict) | TBD | Language |
+| tailwindcss | TBD | Styling |
+| three | TBD | 3D engine (WebGLRenderer) |
+| @react-three/fiber | TBD | React renderer for three |
+| @react-three/drei | TBD | Reusable 3D helpers |
+| @react-three/postprocessing + postprocessing | TBD | Selective post effects |
+| gsap | TBD | All animation, ScrollTrigger, ScrollSmoother, SplitText |
+| @gsap/react | TBD | `useGSAP` hook |
+| react-icons | TBD | Icons |
+| playwright (dev only) | TBD | Headless screenshots for verification, if approved in the plan |
+
+Package manager: npm.
+
+These are the only approved dependencies. Any other new dependency requires
+the owner's permission.
+
+## Project Structure
+
+/app                → Next.js App Router (single route + special files)
+/components         → Shared React components (DOM UI)
+/components/webgl   → R3F scene, 3D components, materials, particle systems
+/shaders            → GLSL source as TypeScript template strings (`*.glsl.ts`)
+/lib                → Shared utilities, constants, site content, quality tiers
+/hooks              → Custom React hooks
+/types              → Shared TypeScript types
+/public             → Static assets (keep minimal; no models, no photos)
+/.claude/skills     → Installed GSAP agent skills (part of the repo; do not modify or delete)
+
+`.agents/` and `skills-lock.json` belong to the skills installer. Do not modify or delete them.
+
+Create folders only when needed. Do not create empty directories.
+
+## Workflow (project-specific, overrides global defaults where stated)
+
+- Communicate with the owner in Serbian. Code, identifiers, comments, and site copy are in English.
+- One plan confirmation at the start of the build. After it is given, work to completion
+  without asking further questions, unless a manual step is required that Claude cannot do.
+- Planning (Phase 0) runs without ultracode, in a single thread. The owner turns ultracode on
+  in the message that confirms the plan; multi-agent orchestration starts only from then.
+- Development runs in Claude Code on the web (cloud) on this GitHub repository, in a Linux container.
+- Commits and pushes are explicitly allowed: commit and push to the session's working branch often
+  (after every working step and at the end of each phase) with clear messages, so no work is lost
+  if the session stops on usage limits or timeouts.
+  Never push to `main`, never force-push, never merge. Never deploy. Never commit secrets.
+- You may delete files you created or the scaffold generated. Ask before deleting anything that
+  existed in the repository before you started. `PROMPT.md`, `CLAUDE.md`, `.claude/`, `.agents/`,
+  and `skills-lock.json` must never be deleted or moved.
+- No dependencies beyond the confirmed plan. Never expose secrets. Flag uncertain design decisions
+  or missing constraints in the final report instead of hiding them.
+- Keep this file current: when a rule here turns out to be wrong for this project, fix the rule
+  instead of silently breaking it.
+
+## 3D / WebGL
+
+- Renderer: three.js `WebGLRenderer` through React Three Fiber. Shaders are GLSL.
+- Do not mix in WebGPU-only or TSL/node-material code. Do not use `three/webgpu` or `three/tsl`.
+- Everything is procedural: custom geometry, shaders, GPU particles, generated textures.
+  No GLTF/GLB models, no downloaded assets, no photographs.
+- Use Drei for solved problems (e.g. `PerformanceMonitor`, `AdaptiveDpr`, environment/lighting helpers,
+  simple particle helpers). Write custom components and shaders where a unique look or more
+  control/performance is needed.
+- Write GLSL as template strings in `/shaders/*.glsl.ts`. Do not add shader loader dependencies.
+- One persistent `<Canvas>` for the whole page, fixed behind the DOM. Do not create multiple WebGL contexts.
+- The Canvas and everything that touches `three` live in client components, loaded with
+  `next/dynamic` (`ssr: false`) from a client wrapper. Never import `three` into a server component.
+- Never drive per-frame values through React state. Use refs, uniforms, and a shared mutable
+  scroll/pointer store read inside `useFrame`.
+- Do not allocate in `useFrame` (no `new Vector3()` per frame). Reuse objects.
+- Dispose geometries, materials, textures, and render targets that are created manually.
+- Post-processing is selective: add an effect only when it visibly improves the frame,
+  and disable or downgrade it on low quality tiers.
+- Adaptive quality is mandatory: quality tiers (particle count, DPR cap, post-processing, shader
+  complexity) chosen from device capability and adjusted at runtime when FPS drops.
+- Cap DPR (max 2 on desktop, lower on mobile). Pause rendering when the tab is hidden.
+- Handle WebGL context loss and missing WebGL with a graceful static fallback.
+- Colors used in shaders come from one palette module in `/lib` that mirrors the CSS design tokens.
+
+## Animation
+
+- Use GSAP for all animations. Use native CSS only for simple transitions, hover effects,
+  and other basic interactions.
+- Scroll: GSAP ScrollTrigger for scroll-linked timelines and pinning, GSAP ScrollSmoother for
+  smooth scrolling. Do not use Lenis. Do not use Motion / Framer Motion.
+- Text animation: GSAP SplitText. Split only after fonts are loaded; revert on cleanup.
+- In React, use `useGSAP` from `@gsap/react` with a scope ref. Register plugins once, in one module.
+- Every animation must clean up on unmount (handled by `useGSAP` context; verify custom listeners).
+- Use the installed GSAP skills (`gsap-core`, `gsap-scrolltrigger`, `gsap-react`, `gsap-plugins`,
+  `gsap-timeline`, `gsap-performance`, `gsap-utils`, `gsap-frameworks`) before writing GSAP code.
+- GSAP drives DOM and scroll progress; R3F owns the render loop. Bridge them through the shared
+  store, not through React re-renders.
+- Animate only `transform` and `opacity` on DOM elements. Avoid layout-triggering properties.
+- Respect `prefers-reduced-motion`: use `gsap.matchMedia()` to provide a calm variant
+  (no smooth scroll hijack, no large parallax, reduced particle motion, instant reveals).
+
+## Sound
+
+- All audio is synthesized with the Web Audio API. No audio files.
+- Sound is off by default. It starts only after an explicit user gesture on a visible toggle.
+- The toggle is keyboard accessible and announces its state. Remember the choice for the session.
+
+## Typography
+
+- Use next/font over CSS/CDN fonts.
+- Keep body text line height between 1.4-1.6.
+- Keep large text line height between 1.1-1.3. Hero-scale display type may go down to 0.9.
+- Keep body line length between 50-75 characters. Display type is exempt.
+- Fluid type sizes are defined once as `clamp()` design tokens and used through utilities.
+
+## Layout & Spacing
+
+- Use a consistent spacing scale in every unit. No arbitrary values like 7px or 0.37em.
+  - px/rem: multiples of 4px (0.25rem), i.e. the Tailwind spacing scale.
+  - em: multiples of 0.25em (0.25em, 0.5em, 0.75em, 1em…).
+- Use consistent spacing between elements.
+- Use Tailwind spacing scale.
+- This rule covers DOM layout. 3D world units, shader constants, and animation values are exempt.
+
+## Icons
+
+- Use React Icons for all icons in the project.
+
+## Code Standards
+
+- Never ignore TypeScript errors. Fix root causes instead of bypassing them with any or type assertions.
+- Do not disable ESLint rules. If necessary, explain why.
+- Use named exports only. Never use default export.
+  - Exception: Next.js requires default exports for special files such as `page.tsx` and `layout.tsx`.
+- Avoid using the `any` type unless absolutely necessary.
+- Use camelCase for variables and functions, PascalCase for components, types, and classes.
+- Avoid obvious comments. Explain why only when necessary (non-obvious shader math deserves a short why).
+- Every pushed commit passes `npx tsc --noEmit`. `npm run lint` and `npm run build` must also pass
+  with zero errors before a phase is marked complete.
+
+## Components
+
+- Use server components by default.
+- Use client components only when necessary. Avoid unnecessary client-side logic and data fetching.
+- Keep server components for composition. Move interactive logic to client components.
+- Respect Next.js server/client boundaries. Do not use client-only utilities in server components.
+- If a server component requires client-only utilities, isolate them in a client component and pass data via props.
+- All real content (headings, copy, links) is rendered as semantic DOM by server components.
+  WebGL and GSAP are progressive enhancement layered on top by client components.
+
+- Use functional components.
+- Keep components small and focused.
+- Prefer one main component per file.
+
+- Make components reusable by default. Extract repeated UI into reusable components.
+- Prefer composition over duplication by building complex components from smaller, reusable components.
+- Check existing components before creating new ones. Reuse when possible.
+- Use props to control component behavior and appearance.
+- Use variants only when a component needs multiple predefined, reusable style or behavior options.
+- Avoid creating multiple component versions.
+- Avoid prop drilling. Use Context or state management when needed.
+
+## Styling Guidelines
+
+- Use design tokens as the single source of truth for all styling values.
+- Implement design tokens using CSS variables.
+- Use semantic Tailwind utilities mapped to CSS variables for theme values like colors, shadows, radius, etc.
+- Use standard Tailwind utilities for layout, spacing, etc.
+- Avoid arbitrary Tailwind values unless necessary.
+- Avoid hex codes in components unless necessary.
+- Avoid custom CSS files unless necessary.
+
+## Performance
+
+- Always use static rendering unless explicitly requested otherwise.
+- The first paint must not wait for WebGL: HTML and critical text render immediately, the scene loads behind the preloader.
+- Use lazy loading for images, non-critical content, and below-the-fold sections.
+- Use next/image for any raster image. Use next/link for internal navigation.
+- Targets: 60 fps on a mid-range laptop, stable 30+ fps on a mid-range phone, no scroll jank,
+  no layout shift (CLS < 0.1).
+- Keep the non-3D JavaScript small; `three` and the scene are code-split out of the initial bundle.
+
+## Responsive Design
+
+- Ensure the UI is responsive on mobile, tablet, and desktop.
+- Use Tailwind responsive utilities (sm, md, lg, xl) when necessary.
+- Mobile gets the full 3D experience at a lower quality tier, not a different site.
+- Touch devices: no custom cursor, no hover-only affordances; pointer interactions map to touch/drag
+  or device-appropriate alternatives.
+
+## Accessibility
+
+- Ensure full keyboard-only navigation across the entire application.
+- Ensure full screen reader compatibility.
+- Provide clear and visible focus states for all interactive elements.
+- Use semantic HTML elements by default instead of generic div structures.
+- Use ARIA attributes only when native semantics are insufficient.
+- The WebGL canvas is decorative: `aria-hidden`, not focusable. No content exists only in WebGL.
+- Split text must stay readable by screen readers (keep an accessible label for split headings).
+- The custom cursor never hides the native focus ring and is disabled for coarse pointers.
+- Provide a skip-to-content link. The preloader must not trap focus or block assistive tech.
+- Text over the 3D scene must meet WCAG AA contrast in every scroll state.
+
+## SEO & Metadata
+
+- Use the Next.js Metadata API (`metadata` export or `generateMetadata()`), including Open Graph and Twitter fields.
+- Use one H1 per page.
+- Use heading levels in logical order according to content hierarchy.
+- Do not skip heading levels.
