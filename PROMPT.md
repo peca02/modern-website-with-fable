@@ -84,7 +84,7 @@ Do Phase 0 yourself in a single thread: no workflows, no multi-agent fan-out. Ul
 starts with my confirmation message (step 6).
 
 1. Environment check (cloud Linux container): Node and npm versions; that the repository
-   contains only `CLAUDE.md`, `PROMPT.md`, `.claude/`, `.agents/`, `skills-lock.json`, and
+   contains only `CLAUDE.md`, `PROMPT.md`, `.agents/`, `skills-lock.json`, and
    standard repository files (README, LICENSE, .gitignore); the current branch and git status;
    and network access. Confirm that the npm registry and the hosts `next/font/google` downloads
    from (fonts.googleapis.com, fonts.gstatic.com) are reachable, and that a headless Chromium
@@ -92,13 +92,13 @@ starts with my confirmation message (step 6).
    I must change the network access setting of the cloud environment.
 2. GSAP skills check: the official GSAP skills (`gsap-core`, `gsap-timeline`,
    `gsap-scrolltrigger`, `gsap-plugins`, `gsap-utils`, `gsap-react`, `gsap-performance`,
-   `gsap-frameworks`, from `greensock/gsap-skills`) must exist in the repository as real files
-   at `.claude/skills/<name>/SKILL.md` and be available to you in this session. Skills
-   installed on my own computer at user level do not exist in the cloud. If they are missing,
-   empty, or broken links, stop and tell me to install them into the repository on my
-   computer (`npx skills add https://github.com/greensock/gsap-skills --agent claude-code`),
-   make sure `.claude/skills/` holds real folders and not links, commit, push, and start a new
-   session. Do not continue without them and do not silently skip this.
+   `gsap-frameworks`, from `greensock/gsap-skills`) live in the repository at
+   `.agents/skills/<name>/SKILL.md`. There is no `.claude/skills/` folder in the repository, so
+   they may not appear in your skills list; that is expected. Always read them directly from
+   `.agents/skills/`: read every `SKILL.md` relevant to the task before writing GSAP code, and
+   read the matching one again whenever you start work in its area. Confirm now that all eight
+   files exist and have content. If any is missing or empty, stop and tell me; do not continue
+   without them and do not silently skip this.
 3. Any other manual step you cannot do yourself (a permission, a tool, a cloud environment
    setting, something on GitHub, anything): list it now, with exact instructions. Do not
    discover blockers halfway through the build.
@@ -123,7 +123,7 @@ Scaffolding notes for the cloud environment (Linux container, bash; the reposito
 already cloned and git is already set up):
 
 - The repository root is not empty. Scaffold directly in the repository root without
-  overwriting or deleting the existing `CLAUDE.md`, `PROMPT.md`, `.claude/`, `.agents/`, and
+  overwriting or deleting the existing `CLAUDE.md`, `PROMPT.md`, `.agents/`, and
   `skills-lock.json`. If `create-next-app` refuses because of files it does not recognize,
   scaffold into a temporary subfolder, move its contents up into the root, remove the
   temporary folder, and set a valid `name` in `package.json`. If the scaffold produces its own
@@ -203,7 +203,7 @@ Follow `CLAUDE.md`. The points most likely to go wrong:
   updates per frame, no re-renders on scroll.
 - GSAP: `useGSAP` with scope, plugins registered once, `gsap.matchMedia()` for breakpoints
   and reduced motion, `ScrollTrigger.refresh()` after fonts and layout settle, SplitText only
-  after `document.fonts.ready`, everything reverted on cleanup. Use the GSAP skills.
+  after `document.fonts.ready`, everything reverted on cleanup. Read the GSAP skills in `.agents/skills/`.
 - Particles: implement your own GPU system (shader-driven attributes, or FBO/GPGPU simulation
   when the effect needs state) for the main effects; Drei particle helpers are fine for
   simple ambient dust. Particle counts come from the quality tier.
@@ -315,7 +315,7 @@ rule and tell me in the final report, rather than quietly breaking it.
 - Push only to your working branch. Do not push to `main`, do not merge, do not force-push,
   do not deploy, publish, or create accounts. Do not add secrets or env files.
 - Do not delete files you did not create without asking. Never delete `PROMPT.md`,
-  `CLAUDE.md`, `.claude/`, `.agents/`, or `skills-lock.json`.
+  `CLAUDE.md`, `.agents/`, or `skills-lock.json`.
 - Do not leave TODOs, placeholder copy, dead code, debug helpers, or console logs in the result.
 
 ## 10. Done means

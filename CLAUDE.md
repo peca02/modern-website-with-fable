@@ -42,9 +42,10 @@ the owner's permission.
 /hooks              → Custom React hooks
 /types              → Shared TypeScript types
 /public             → Static assets (keep minimal; no models, no photos)
-/.claude/skills     → Installed GSAP agent skills (part of the repo; do not modify or delete)
+/.agents/skills     → Installed GSAP agent skills (part of the repo; do not modify or delete)
 
 `.agents/` and `skills-lock.json` belong to the skills installer. Do not modify or delete them.
+The repository has no `.claude/skills/` folder; always read the skills directly from `.agents/skills/`.
 
 Create folders only when needed. Do not create empty directories.
 
@@ -61,7 +62,7 @@ Create folders only when needed. Do not create empty directories.
   if the session stops on usage limits or timeouts.
   Never push to `main`, never force-push, never merge. Never deploy. Never commit secrets.
 - You may delete files you created or the scaffold generated. Ask before deleting anything that
-  existed in the repository before you started. `PROMPT.md`, `CLAUDE.md`, `.claude/`, `.agents/`,
+  existed in the repository before you started. `PROMPT.md`, `CLAUDE.md`, `.agents/`,
   and `skills-lock.json` must never be deleted or moved.
 - No dependencies beyond the confirmed plan. Never expose secrets. Flag uncertain design decisions
   or missing constraints in the final report instead of hiding them.
@@ -102,8 +103,9 @@ Create folders only when needed. Do not create empty directories.
 - Text animation: GSAP SplitText. Split only after fonts are loaded; revert on cleanup.
 - In React, use `useGSAP` from `@gsap/react` with a scope ref. Register plugins once, in one module.
 - Every animation must clean up on unmount (handled by `useGSAP` context; verify custom listeners).
-- Use the installed GSAP skills (`gsap-core`, `gsap-scrolltrigger`, `gsap-react`, `gsap-plugins`,
-  `gsap-timeline`, `gsap-performance`, `gsap-utils`, `gsap-frameworks`) before writing GSAP code.
+- Read the relevant GSAP skills from `.agents/skills/<name>/SKILL.md` (`gsap-core`, `gsap-scrolltrigger`,
+  `gsap-react`, `gsap-plugins`, `gsap-timeline`, `gsap-performance`, `gsap-utils`, `gsap-frameworks`)
+  before writing GSAP code.
 - GSAP drives DOM and scroll progress; R3F owns the render loop. Bridge them through the shared
   store, not through React re-renders.
 - Animate only `transform` and `opacity` on DOM elements. Avoid layout-triggering properties.
