@@ -108,7 +108,7 @@ export function Director() {
     const portrait = clamp((1.1 - store.viewport.aspect) / 0.5);
     const shift = sample(SHIFT, t);
     const truckX = -shift * (1 - portrait);
-    const truckY = -(sample(RISE, t) + shift * portrait * 0.55) * fit;
+    const truckY = -(sample(RISE, t) + shift * portrait * 0.22) * fit;
     const dx = Math.cos(azimuth) * truckX - Math.sin(azimuth) * Math.sin(elevation) * truckY;
     const dy = Math.cos(elevation) * truckY;
     const dz = -Math.sin(azimuth) * truckX - Math.cos(azimuth) * Math.sin(elevation) * truckY;
@@ -170,13 +170,15 @@ export function Director() {
     rig.follow = sample(FOLLOW, t);
     rig.flow = sample(FLOW, t) * (1 + store.heat.value * sample(HEAT_INPUT, t) * 1.5);
     rig.streak = sample(STREAK, t);
-    rig.plasma = sample(PLASMA, t) * smoothstep(0.4, 1, intro);
+    // On phones the form scrolls over the star: let it recede instead of fighting the fields.
+    const recede = 1 - portrait * 0.7 * smoothstep(6.4, 6.75, t);
+    rig.plasma = sample(PLASMA, t) * smoothstep(0.4, 1, intro) * recede;
     rig.core = sample(CORE, t);
     rig.heat = sample(HEAT, t) + store.heat.value * sample(HEAT_INPUT, t) * 0.88;
     rig.machine = sample(MACHINE, t);
     rig.cut = store.pins.winding;
     rig.cutCenter = Math.atan2(rig.cameraPosition.z, rig.cameraPosition.x);
-    rig.particleAlpha = sample(PARTICLE_ALPHA, t);
+    rig.particleAlpha = sample(PARTICLE_ALPHA, t) * recede;
     rig.wordmark = sample(WORDMARK, t) * smoothstep(0.5, 1, intro);
     state.flash = damp(state.flash, 0, 1.1, dt);
     rig.flash = state.flash;
