@@ -10,7 +10,7 @@ import { CHAPTERS } from "@/lib/site";
 const TITLE_BREAK_BEFORE = "want";
 const QUOTE_EMPHASIS = "bottle";
 const SECONDS_PER_UNIT: Record<string, number> = { ms: 0.001, s: 1 };
-const COPY_COLUMNS = "col-span-full md:col-span-9 lg:col-span-6";
+const COPY_COLUMNS = "col-span-full md:col-span-9 lg:col-span-6 lg:col-start-1";
 
 function inSeconds(figure: { value: string; unit: string }) {
   return Number(figure.value) * (SECONDS_PER_UNIT[figure.unit] ?? 1);
@@ -26,7 +26,7 @@ export function TensionChapter() {
 
   return (
     <section id="tension" data-chapter="tension" aria-labelledby="tension-title" className="grid-page min-h-[320svh] pb-32">
-      <TitleDrift className="col-span-full flex min-h-[80svh] flex-col justify-center gap-8 pt-24 max-md:text-shade lg:col-span-8 lg:gap-12">
+      <TitleDrift className="col-span-full flex min-h-[80svh] flex-col justify-center gap-8 pt-24 text-shade lg:col-span-8 lg:gap-12">
         <Reveal>
           <ChapterMark chapter="tension" />
         </Reveal>
@@ -42,7 +42,7 @@ export function TensionChapter() {
       </TitleDrift>
 
       {TENSION.statements.map((statement, index) => (
-        <article key={statement.heading} className={`${COPY_COLUMNS} flex min-h-[60svh] flex-col justify-center py-16 max-md:text-shade`}>
+        <article key={statement.heading} className={`${COPY_COLUMNS} flex min-h-[60svh] flex-col justify-center py-16 text-shade`}>
           <div className="flex items-center gap-4">
             <p className="type-micro text-plasma">
               {chapterNumber}.{index + 1}
@@ -61,7 +61,7 @@ export function TensionChapter() {
         </article>
       ))}
 
-      <ComparisonBars ratio={ratio} className={`${COPY_COLUMNS} flex flex-col gap-12 py-24 max-md:text-shade`}>
+      <ComparisonBars ratio={ratio} className={`${COPY_COLUMNS} flex flex-col gap-12 py-24 text-shade`}>
         <div className="flex items-center gap-4">
           <p className="type-micro text-ash">{label}</p>
           <Reveal kind="rule" className="h-px flex-1 bg-rule-strong" />
@@ -97,7 +97,7 @@ export function TensionChapter() {
         </div>
       </ComparisonBars>
 
-      <figure className="col-span-full flex min-h-[60svh] flex-col justify-center max-md:text-shade md:col-span-10 lg:col-span-8">
+      <figure className="col-span-full flex min-h-[60svh] flex-col justify-center text-shade md:col-span-10 lg:col-span-8">
         <SplitReveal as="blockquote" className="type-display">
           {quoteStart}
           <em className="italic text-plasma">{QUOTE_EMPHASIS}</em>
