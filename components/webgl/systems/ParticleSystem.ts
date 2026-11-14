@@ -33,7 +33,7 @@ function createRenderMaterial(points: boolean, size: number): THREE.ShaderMateri
       uPrevious: { value: null },
       uDt: { value: 1 / 60 },
       uStreak: { value: 0.05 },
-      uPointSize: { value: 1.6 },
+      uPointSize: { value: 1.2 },
       uPixelRatio: { value: 1 },
       uSize: { value: size },
       uHeat: { value: 0 },
@@ -162,8 +162,8 @@ export class ParticleSystem {
       uniforms.uHeat.value = rig.heat;
       uniforms.uPixelRatio.value = pixelRatio;
     }
-    this.lineMaterial.uniforms.uAlpha.value = 0.34 * this.density * rig.particleAlpha * this.fade;
-    this.pointMaterial.uniforms.uAlpha.value = 0.2 * this.density * rig.particleAlpha * this.fade;
+    this.lineMaterial.uniforms.uAlpha.value = 0.085 * this.density * rig.particleAlpha * this.fade;
+    this.pointMaterial.uniforms.uAlpha.value = 0.05 * this.density * rig.particleAlpha * this.fade;
   }
 
   get count(): number {

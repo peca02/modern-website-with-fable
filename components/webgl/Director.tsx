@@ -1,10 +1,11 @@
 "use client";
 
 import { useFrame } from "@react-three/fiber";
+import { useEffect } from "react";
 import * as THREE from "three";
 import { clamp, damp, lerp, smoothstep } from "@/lib/math";
 import { skeinPoint, type Vec3Tuple } from "@/lib/stellarator";
-import { store } from "@/lib/store";
+import { on, store } from "@/lib/store";
 import { rig } from "@/components/webgl/rig";
 import { SHAPE } from "@/shaders/particles.glsl";
 
@@ -63,9 +64,17 @@ const insideTarget = new THREE.Vector3();
 const forward = new THREE.Vector3();
 const ray = new THREE.Vector3();
 
-const state = { time: 0, pointerX: 0, pointerY: 0, clock: 0 };
+const state = { time: 0, pointerX: 0, pointerY: 0, clock: 0, flash: 0 };
 
 export function Director() {
+  useEffect(
+    () =>
+      on("ignite", () => {
+        state.flash = 1;
+      }),
+    [],
+  );
+
   useFrame((frame, delta) => {
     const dt = Math.min(delta, 0.05);
     const reduced = store.motion.reduced;
@@ -155,7 +164,9 @@ export function Director() {
     rig.cutCenter = Math.atan2(rig.cameraPosition.z, rig.cameraPosition.x);
     rig.particleAlpha = sample(PARTICLE_ALPHA, t);
     rig.wordmark = sample(WORDMARK, t) * smoothstep(0.5, 1, intro);
-    rig.aberration = clamp(Math.abs(store.scroll.velocity) / 6000) * 0.6;
+    state.flash = damp(state.flash, 0, 1.1, dt);
+    rig.flash = state.flash;
+    rig.aberration = clamp(Math.abs(store.scroll.velocity) / 6000) * 0.6 + state.flash * 0.8;
   }, -2);
 
   return null;

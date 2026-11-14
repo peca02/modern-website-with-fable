@@ -74,7 +74,7 @@ void main() {
   float rim = pow(1.0 - facing, 1.8);
   float pattern = fieldPattern(vAngles, 1.6, 0.35);
   float strands = smoothstep(0.05, 0.85, pattern);
-  float energy = (0.06 + strands * strands * 1.5) * (0.12 + rim);
+  float energy = (0.03 + strands * strands * 0.7) * (0.08 + rim);
   gl_FragColor = vec4(heatRamp(0.2 + uHeat * 0.55 + strands * 0.3) * energy * uIntensity, 1.0);
 }
 `;

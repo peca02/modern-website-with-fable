@@ -8,12 +8,21 @@ import { reportLoad, skipSceneLoad } from "@/lib/loadClock";
 import { PALETTE } from "@/lib/palette";
 import { QUALITY, lowerTier, pickInitialTier, type QualityTier } from "@/lib/quality";
 import { emit, store } from "@/lib/store";
+import { SceneFallback } from "@/components/SceneFallback";
 import { Director } from "@/components/webgl/Director";
 import { Effects } from "@/components/webgl/Effects";
+import { Machine } from "@/components/webgl/Machine";
 import { Particles } from "@/components/webgl/Particles";
 import { Plasma } from "@/components/webgl/Plasma";
+import { Wordmark } from "@/components/webgl/Wordmark";
 
 type Probe = { supported: false } | { supported: true; tier: QualityTier };
+
+/** `?tier=low|medium|high|ultra` pins the quality tier, for comparing tiers on a real device. */
+function requestedTier(): QualityTier | null {
+  const value = new URLSearchParams(window.location.search).get("tier");
+  return value === "low" || value === "medium" || value === "high" || value === "ultra" ? value : null;
+}
 
 function probeDevice(): Probe {
   const canvas = document.createElement("canvas");
@@ -24,6 +33,8 @@ function probeDevice(): Probe {
   const maxTextureSize = Number(gl.getParameter(gl.MAX_TEXTURE_SIZE));
   gl.getExtension("WEBGL_lose_context")?.loseContext();
   const memory = "deviceMemory" in navigator && typeof navigator.deviceMemory === "number" ? navigator.deviceMemory : undefined;
+  const pinned = requestedTier();
+  if (pinned) return { supported: true, tier: pinned };
   return {
     supported: true,
     tier: pickInitialTier({
@@ -56,7 +67,7 @@ export function Scene() {
     emit("tier");
   }, [tier]);
 
-  if (!probe.supported || lost) return null;
+  if (!probe.supported || lost) return <SceneFallback />;
   const settings = QUALITY[tier];
 
   return (
@@ -83,9 +94,11 @@ export function Scene() {
       }}
     >
       <color attach="background" args={[PALETTE.void]} />
-      <PerformanceMonitor flipflops={2} onDecline={() => setTier(lowerTier)} />
+      {requestedTier() ? null : <PerformanceMonitor flipflops={2} onDecline={() => setTier(lowerTier)} />}
       <Director />
       <Plasma segments={settings.surfaceSegments} shellCount={settings.shellCount} />
+      <Machine segments={settings.surfaceSegments} coilSegments={settings.coilSegments} />
+      <Wordmark />
       <Particles key={settings.particleTextureSize} textureSize={settings.particleTextureSize} />
       <Effects settings={settings} />
     </Canvas>
