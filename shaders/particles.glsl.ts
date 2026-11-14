@@ -115,7 +115,7 @@ void main() {
   gl_PointSize = uPointSize * uPixelRatio * (0.5 + seed.w) * (6.0 / max(-mv.z, 0.5));
   float core = 1.0 - seed.x;
   vHeat = clamp(0.1 + 0.45 * core * core * core + uHeat * 0.5 + state.w * 0.04, 0.0, 1.0);
-  vFade = (1.0 - position.z * 0.85) * smoothstep(0.2, 1.2, -mv.z);
+  vFade = (1.0 - position.z * 0.85) * smoothstep(0.3, 2.6, -mv.z);
 }
 `;
 

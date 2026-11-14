@@ -178,12 +178,12 @@ export function ChapterNav() {
       >
         <ul
           id={LIST_ID}
-          className="grid-page pt-4 pb-8 md:flex md:flex-wrap md:items-baseline md:gap-x-12 md:gap-y-4 md:pt-8 md:pb-12 lg:gap-x-16"
+          className="grid-page pt-4 pb-8 md:gap-y-6 md:pt-8 md:pb-12 xl:flex xl:items-baseline xl:justify-between"
         >
           {CHAPTERS.map((chapter, index) => {
             const isActive = index === active;
             return (
-              <li key={chapter.id} className="col-span-full border-t border-rule md:border-t-0">
+              <li key={chapter.id} className="col-span-full border-t border-rule md:col-span-3 md:border-t-0">
                 <a
                   href={`#${chapter.id}`}
                   aria-current={isActive ? "true" : undefined}
