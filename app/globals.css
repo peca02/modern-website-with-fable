@@ -47,6 +47,7 @@
     background: var(--color-void);
     color: var(--color-bone);
     -webkit-text-size-adjust: 100%;
+    overflow-x: clip;
     scrollbar-color: var(--color-ash) var(--color-void);
     scrollbar-width: thin;
   }
