@@ -2,7 +2,6 @@ import { HeroParallax } from "@/components/chapters/thread/HeroParallax";
 import { ScrollHint } from "@/components/chapters/thread/ScrollHint";
 import { Reveal } from "@/components/motion/Reveal";
 import { SplitReveal } from "@/components/motion/SplitReveal";
-import { ChapterMark } from "@/components/ui/ChapterMark";
 import { Stat } from "@/components/ui/Stat";
 import { HERO } from "@/lib/content";
 
@@ -22,9 +21,7 @@ export function ThreadChapter() {
   return (
     <section id="thread" data-chapter="thread" aria-labelledby="thread-title">
       <HeroParallax className="grid-page min-h-svh grid-rows-[auto_1fr_auto_auto] gap-y-8 pt-24 pb-8 lg:gap-y-12 lg:pb-12">
-        <Reveal when="loaded" delay={0.1} className="col-span-full">
-          <ChapterMark chapter="thread" />
-        </Reveal>
+        <div aria-hidden="true" className="col-span-full" />
 
         <div aria-hidden="true" className="col-span-full" />
 
