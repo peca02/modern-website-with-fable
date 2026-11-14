@@ -15,7 +15,7 @@ type RevealProps = {
   children?: React.ReactNode;
 };
 
-/** Entrance for non-text blocks. Text uses SplitReveal. */
+/** Entrance for non-text blocks. Text uses SplitReveal. Fades with opacity only, so hidden controls stay focusable. */
 export function Reveal({ kind = "fade", stagger = false, when = "scroll", delay = 0, className, children }: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -31,8 +31,8 @@ export function Reveal({ kind = "fade", stagger = false, when = "scroll", delay 
           kind === "rule"
             ? { scaleX: 0, transformOrigin: "left center" }
             : kind === "rise"
-              ? { autoAlpha: 0, y: 32 }
-              : { autoAlpha: 0 };
+              ? { opacity: 0, y: 32 }
+              : { opacity: 0 };
         const tween = gsap.from(targets, {
           ...from,
           duration: DURATION.reveal,
