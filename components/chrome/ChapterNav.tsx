@@ -174,7 +174,7 @@ export function ChapterNav() {
 
       <div
         data-panel
-        className="pointer-events-auto invisible absolute inset-x-0 top-0 -z-10 border-b border-rule bg-void/95 pt-16 opacity-0 md:pt-20"
+        className="pointer-events-auto invisible absolute inset-x-0 top-0 -z-10 border-b border-rule bg-void pt-16 opacity-0 md:pt-20"
       >
         <ul
           id={LIST_ID}
