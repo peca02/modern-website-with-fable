@@ -25,12 +25,17 @@ export function skipSceneLoad(): void {
 }
 
 const MAX_RATE = 0.55;
+/** A stage that never reports (blocked font, stalled chunk) must not hold the page hostage. */
+const PATIENCE_SECONDS = 12;
+let waited = 0;
 const INTRO_SECONDS = 3.2;
 
 /** Advances the displayed progress and the hand-off into the hero. Single writer of store.load. */
 export function tickLoad(dt: number): void {
   const load = store.load;
   if (!load.done) {
+    waited += dt;
+    if (waited > PATIENCE_SECONDS) load.target = 1;
     const step = Math.min(load.target - load.shown, MAX_RATE * dt);
     load.shown = clamp(load.shown + Math.max(step, 0));
     if (load.shown >= 0.999) {
