@@ -5,6 +5,9 @@ import { SITE } from "@/lib/site";
 import { PALETTE } from "@/lib/palette";
 import { SceneMount } from "@/components/SceneMount";
 import { ScrollRuntime } from "@/components/ScrollRuntime";
+import { Cursor } from "@/components/chrome/Cursor";
+import { Header } from "@/components/chrome/Header";
+import { Preloader } from "@/components/chrome/Preloader";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -55,11 +58,20 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={`${fraunces.variable} ${instrument.variable} ${martian.variable}`}>
       <body>
+        <a
+          href="#main"
+          className="type-micro fixed left-4 top-4 z-50 -translate-y-24 bg-bone px-4 py-3 text-void transition-transform duration-300 focus-visible:translate-y-0"
+        >
+          Skip to content
+        </a>
         <SceneMount />
         <ScrollRuntime />
+        <Header />
         <div id="smooth-wrapper">
           <div id="smooth-content">{children}</div>
         </div>
+        <Preloader />
+        <Cursor />
       </body>
     </html>
   );

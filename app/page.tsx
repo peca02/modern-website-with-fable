@@ -1,18 +1,26 @@
 import { ChapterTracker } from "@/components/ChapterTracker";
-import { CHAPTERS } from "@/lib/site";
+import { IgnitionChapter } from "@/components/chapters/IgnitionChapter";
+import { InsideChapter } from "@/components/chapters/InsideChapter";
+import { TensionChapter } from "@/components/chapters/TensionChapter";
+import { ThreadChapter } from "@/components/chapters/ThreadChapter";
+import { TieInChapter } from "@/components/chapters/TieInChapter";
+import { WindingChapter } from "@/components/chapters/WindingChapter";
+import { YieldChapter } from "@/components/chapters/YieldChapter";
+import { SiteFooter } from "@/components/chrome/SiteFooter";
 
 export default function Home() {
   return (
     <>
       <main id="main" className="relative z-10">
-        {CHAPTERS.map((chapter) => (
-          <section key={chapter.id} data-chapter={chapter.id} className="grid-page min-h-[180svh] items-start pt-24">
-            <p className="type-micro col-span-4 text-ash">
-              {chapter.index} — {chapter.label}
-            </p>
-          </section>
-        ))}
+        <ThreadChapter />
+        <TensionChapter />
+        <WindingChapter />
+        <IgnitionChapter />
+        <InsideChapter />
+        <YieldChapter />
+        <TieInChapter />
       </main>
+      <SiteFooter />
       <ChapterTracker />
     </>
   );
