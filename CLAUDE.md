@@ -95,6 +95,8 @@ Create folders only when needed. Do not create empty directories.
 - Cap DPR (max 2 on desktop, lower on mobile). Pause rendering when the tab is hidden.
 - Handle WebGL context loss and missing WebGL with a graceful static fallback.
 - Colors used in shaders come from one palette module in `/lib` that mirrors the CSS design tokens.
+- `?tier=low|medium|high|ultra` pins the quality tier (and turns the runtime monitor off) for comparing tiers on a real device.
+- Lint (React Compiler rules) forbids mutating memoised values: write uniforms through refs or class instances, never through `useMemo` results.
 
 ## Animation
 
