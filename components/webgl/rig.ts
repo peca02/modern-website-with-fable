@@ -27,7 +27,7 @@ export const rig = {
   cut: 0,
   cutCenter: 0,
   wordmark: 0,
-  bloom: 1,
+  flash: 0,
   aberration: 0,
   time: 0,
 };

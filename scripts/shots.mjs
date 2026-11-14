@@ -1,5 +1,6 @@
 // Dev-only verification: drives headless Chromium over the running site and saves screenshots.
 // Usage: node scripts/shots.mjs <outDir> [--url=http://localhost:3000] [--size=1440x900] [--stops=0,0.5,1] [--mobile] [--reduced] [--wait=1500]
+//        --chapter=<id> --offsets=0,0.5,1  scrolls to that section's top plus N viewport heights instead of page fractions
 import { chromium } from "playwright";
 import { mkdirSync } from "node:fs";
 
@@ -30,10 +31,28 @@ page.on("pageerror", (e) => logs.push(`pageerror: ${e.message}`));
 await page.goto(opt("url", "http://localhost:3000"), { waitUntil: "load" });
 await page.waitForTimeout(Number(opt("boot", "9000")));
 const max = await page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight);
-for (const stop of stops) {
-  await page.evaluate((y) => window.scrollTo(0, y), Math.round(max * stop));
-  await page.waitForTimeout(wait);
-  await page.screenshot({ path: `${outDir}/${tag}-${String(Math.round(stop * 100)).padStart(3, "0")}.png` });
+const chapter = opt("chapter", "");
+if (chapter) {
+  const offsets = opt("offsets", "0").split(",").map(Number);
+  for (const offset of offsets) {
+    await page.evaluate(
+      ({ id, offset }) => {
+        const section = document.querySelector(`[data-chapter="${id}"]`);
+        const pinSpacer = section?.closest(".pin-spacer") ?? section;
+        const top = (pinSpacer?.getBoundingClientRect().top ?? 0) + window.scrollY;
+        window.scrollTo(0, top + offset * window.innerHeight);
+      },
+      { id: chapter, offset },
+    );
+    await page.waitForTimeout(wait);
+    await page.screenshot({ path: `${outDir}/${tag}-${chapter}-${String(Math.round(offset * 100)).padStart(4, "0")}.png` });
+  }
+} else {
+  for (const stop of stops) {
+    await page.evaluate((y) => window.scrollTo(0, y), Math.round(max * stop));
+    await page.waitForTimeout(wait);
+    await page.screenshot({ path: `${outDir}/${tag}-${String(Math.round(stop * 100)).padStart(3, "0")}.png` });
+  }
 }
 console.log(JSON.stringify({ max, canvas: await page.evaluate(() => !!document.querySelector("canvas")), logs: [...new Set(logs)] }, null, 1));
 await browser.close();

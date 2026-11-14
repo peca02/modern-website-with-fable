@@ -60,7 +60,7 @@ export function Plasma({ segments, shellCount }: PlasmaProps) {
         <shaderMaterial
           vertexShader={surfaceVertex}
           fragmentShader={coreFragment}
-          uniforms={{ uRho: { value: CORE_RHO }, uTime: { value: 0 }, uHeat: { value: 0 }, uIntensity: { value: 0 }, ...paletteUniforms() }}
+          uniforms={{ uRho: { value: CORE_RHO }, uRound: { value: 0 }, uTime: { value: 0 }, uHeat: { value: 0 }, uIntensity: { value: 0 }, ...paletteUniforms() }}
           side={THREE.DoubleSide}
         />
       </mesh>
@@ -69,7 +69,7 @@ export function Plasma({ segments, shellCount }: PlasmaProps) {
           <shaderMaterial
             vertexShader={surfaceVertex}
             fragmentShader={shellFragment}
-            uniforms={{ uRho: { value: shell.rho }, uTime: { value: 0 }, uHeat: { value: 0 }, uIntensity: { value: 0 }, ...paletteUniforms() }}
+            uniforms={{ uRho: { value: shell.rho }, uRound: { value: 0 }, uTime: { value: 0 }, uHeat: { value: 0 }, uIntensity: { value: 0 }, ...paletteUniforms() }}
             side={THREE.DoubleSide}
             transparent
             depthWrite={false}

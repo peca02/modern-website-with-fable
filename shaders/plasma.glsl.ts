@@ -4,6 +4,7 @@ import { skeinGlsl } from "@/shaders/skein.glsl";
 /** Shared by every mesh that lies on a flux surface: position.xy carries (theta, phi). */
 export const surfaceVertex = /* glsl */ `
 uniform float uRho;
+uniform float uRound;
 varying vec3 vNormal;
 varying vec3 vOutward;
 varying vec3 vView;
@@ -11,15 +12,24 @@ varying vec2 vAngles;
 
 ${skeinGlsl}
 
+// uRound 1 swaps the flux surface for a plain torus (the cryostat).
+vec3 surfacePoint(float rho, float theta, float phi) {
+  if (uRound > 0.5) {
+    float r = SK_R0 + SK_A * rho * cos(theta);
+    return vec3(r * cos(phi), SK_A * rho * sin(theta), r * sin(phi));
+  }
+  return skeinPoint(rho, theta, phi);
+}
+
 void main() {
   float theta = position.x;
   float phi = position.y;
-  vec3 p = skeinPoint(uRho, theta, phi);
+  vec3 p = surfacePoint(uRho, theta, phi);
   const float e = 0.012;
-  vec3 dTheta = skeinPoint(uRho, theta + e, phi) - p;
-  vec3 dPhi = skeinPoint(uRho, theta, phi + e) - p;
+  vec3 dTheta = surfacePoint(uRho, theta + e, phi) - p;
+  vec3 dPhi = surfacePoint(uRho, theta, phi + e) - p;
   vec3 n = normalize(cross(dTheta, dPhi));
-  vec3 axis = skeinPoint(0.0, theta, phi);
+  vec3 axis = surfacePoint(0.0, theta, phi);
   if (dot(n, p - axis) < 0.0) n = -n;
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
   vNormal = normalMatrix * n;
