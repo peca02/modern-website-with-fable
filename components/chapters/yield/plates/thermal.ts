@@ -27,7 +27,7 @@ export function drawThermal(surface: PlateSurface): void {
     scale: "0 – 150 MK",
   });
   const barWidth = 6;
-  const area = { left: rect.left + 24, top: rect.top + 20, right: rect.right - 52, bottom: rect.bottom - 20 };
+  const area = { left: rect.left + 24, top: rect.top + 20, right: rect.right - 64, bottom: rect.bottom - 20 };
   const fit = fitSection(PHI, 1.14, area);
   const point: [number, number] = [0, 0];
   const pixel: [number, number] = [0, 0];
@@ -70,7 +70,7 @@ export function drawThermal(surface: PlateSurface): void {
   ctx.arc(axisX, axisY, 5, 0, Math.PI * 2);
   ctx.stroke();
 
-  const barLeft = rect.right - barWidth - 22;
+  const barLeft = rect.right - barWidth - 36;
   const barTop = area.top + 12;
   const barBottom = area.bottom - 12;
   const gradient = ctx.createLinearGradient(0, barBottom, 0, barTop);

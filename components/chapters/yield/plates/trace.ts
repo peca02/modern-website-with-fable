@@ -95,7 +95,7 @@ export function drawTrace(surface: PlateSurface): void {
 
   // A magnified slice of the flat-top: the only place the noise is visible at all.
   const lensWidth = Math.min(132, (right - left) * 0.42);
-  const lensLeft = Math.round(right - lensWidth);
+  const lensLeft = Math.round(dayX(7));
   const lensTop = Math.round(top + height * 0.3);
   const lensHeight = Math.round(height * 0.13);
   const sourceX = dayX(22);

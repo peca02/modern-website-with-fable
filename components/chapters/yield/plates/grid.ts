@@ -23,7 +23,7 @@ export function drawGrid(surface: PlateSurface): void {
 
   ctx.lineWidth = 1;
   for (let ring = 1; ring <= 4; ring++) {
-    ctx.strokeStyle = tint("bone", 0.1);
+    ctx.strokeStyle = tint("bone", 0.2);
     ctx.setLineDash([2, 4]);
     ctx.beginPath();
     ctx.arc(nodeX, nodeY, ring * reachMax * 0.24, 0, Math.PI * 2);

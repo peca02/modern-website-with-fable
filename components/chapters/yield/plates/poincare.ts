@@ -30,7 +30,7 @@ export function drawPoincare(surface: PlateSurface): void {
     note: "φ = 18° · 12,400 punctures",
     scale: "ι = 5/5",
   });
-  const fit = fitSection(PHI, 1.16, inset(rect, 20, 20));
+  const fit = fitSection(PHI, 1.12, inset(rect, 2, 2));
   const point: [number, number] = [0, 0];
   const pixel: [number, number] = [0, 0];
 
@@ -99,7 +99,7 @@ export function drawPoincare(surface: PlateSurface): void {
   ctx.fillStyle = tint("ember", 0.7);
   for (let k = 0; k < 1500; k++) {
     const depth = Math.pow(random(), 1.8);
-    dot(1.012 + depth * 0.14, random() * Math.PI * 2, 0.8);
+    dot(1.012 + depth * 0.105, random() * Math.PI * 2, 0.8);
   }
 
   ctx.globalCompositeOperation = "source-over";
