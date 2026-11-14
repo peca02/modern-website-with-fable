@@ -30,6 +30,7 @@ uniform float uCutWidth;
 uniform float uPresence;
 uniform float uHeat;
 uniform float uCold;
+uniform float uWire;
 uniform vec2 uTiles;
 uniform vec3 uCryo;
 uniform vec3 uBone;
@@ -60,19 +61,28 @@ void main() {
   bool inner = facing < 0.0;
   facing = abs(facing);
 
-  vec2 cell = fract(vec2(vAngles.x, vAngles.y) / TAU * uTiles);
-  float seam = smoothstep(0.035, 0.0, min(min(cell.x, 1.0 - cell.x), min(cell.y, 1.0 - cell.y)));
+  vec2 grid = vec2(vAngles.x, vAngles.y) / TAU * uTiles;
+  vec2 cell = fract(grid);
+  vec2 toLine = min(cell, 1.0 - cell) / max(fwidth(grid), 1e-5);
+  float seam = 1.0 - smoothstep(0.4, 1.4, min(toLine.x, toLine.y));
 
-  vec3 metal = mix(vec3(0.016, 0.017, 0.019), vec3(0.05, 0.052, 0.056), facing);
-  float key = max(dot(normalize(vOutward), normalize(vec3(-0.4, 0.8, 0.45))), 0.0);
-  vec3 color = metal + uBone * key * 0.035;
-  color += uCryo * pow(1.0 - facing, 3.0) * (0.1 + 0.5 * uCold) * (inner ? 0.0 : 1.0);
-  color += heatRamp(0.35 + uHeat * 0.4) * (0.1 + 0.3 * facing) * (inner ? 1.0 : 0.0);
-  color *= 1.0 - seam * 0.7;
+  vec3 color;
+  if (uWire > 0.5) {
+    // Outer shells are drawn as hairline cages so the layers inside stay readable.
+    if (seam < 0.05 && angular > uCutWidth + 0.02) discard;
+    color = mix(uCryo, uBone, 0.3) * seam * (0.05 + 0.3 * pow(1.0 - facing, 2.0)) * (inner ? 0.5 : 1.0);
+  } else {
+    vec3 metal = mix(vec3(0.004, 0.0045, 0.005), vec3(0.02, 0.021, 0.023), facing);
+    float key = max(dot(normalize(vOutward), normalize(vec3(-0.4, 0.8, 0.45))), 0.0);
+    color = metal + uBone * key * 0.012;
+    color += uCryo * pow(1.0 - facing, 3.0) * (0.03 + 0.22 * uCold) * (inner ? 0.0 : 1.0);
+    color += heatRamp(0.25 + uHeat * 0.4) * (0.02 + 0.1 * facing * facing) * (inner ? 1.0 : 0.0) * (1.0 - uCold);
+    color += mix(uBone, uCryo, uCold) * seam * 0.02;
+  }
 
   float edge = smoothstep(uCutWidth + 0.02, uCutWidth, angular) * step(0.001, uCutWidth);
-  color += heatRamp(0.75) * edge * 1.6 * (1.0 - uCold) + uCryo * edge * 1.1 * uCold;
-  color += heatRamp(0.9) * (1.0 - arrival) * 1.2;
+  color += heatRamp(0.75) * edge * 0.9 * (1.0 - uCold) + uCryo * edge * 0.6 * uCold;
+  color += heatRamp(0.9) * (1.0 - arrival) * 0.6;
 
   gl_FragColor = vec4(color, 1.0);
 }

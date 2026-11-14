@@ -24,11 +24,11 @@ type MachineProps = {
  * back like terraces: outer layers open first and widest.
  */
 const LAYERS = [
-  { key: "wall", rho: 1.2, round: 0, tiles: [18, 150], cold: 0, opensAt: 0.66, width: 0.42 },
-  { key: "blanket", rho: 1.42, round: 0, tiles: [10, 60], cold: 0, opensAt: 0.5, width: 0.56 },
-  { key: "vessel", rho: 1.64, round: 0, tiles: [6, 40], cold: 0.3, opensAt: 0.34, width: 0.72 },
-  { key: "coils", rho: COIL_RHO, round: 0, tiles: [1, 1], cold: 1, opensAt: 0.18, width: 0.9 },
-  { key: "cryostat", rho: 3.1, round: 1, tiles: [8, 30], cold: 0.8, opensAt: 0.02, width: 1.1 },
+  { key: "wall", rho: 1.2, round: 0, wire: 0, tiles: [18, 150], cold: 0, opensAt: 0.66, width: 0.42 },
+  { key: "blanket", rho: 1.42, round: 0, wire: 0, tiles: [10, 60], cold: 0, opensAt: 0.5, width: 0.56 },
+  { key: "vessel", rho: 1.64, round: 0, wire: 1, tiles: [12, 100], cold: 0.3, opensAt: 0.34, width: 0.72 },
+  { key: "coils", rho: COIL_RHO, round: 0, wire: 0, tiles: [1, 1], cold: 1, opensAt: 0.18, width: 0.9 },
+  { key: "cryostat", rho: 3.7, round: 1, wire: 1, tiles: [16, 72], cold: 0.8, opensAt: 0.02, width: 1.1 },
 ] as const;
 
 const RING_OUTER = 0.14;
@@ -49,6 +49,7 @@ function createUniforms(layer: (typeof LAYERS)[number]) {
     uPresence: { value: 0 },
     uHeat: { value: 0 },
     uCold: { value: layer.cold },
+    uWire: { value: layer.wire },
     uTiles: { value: new THREE.Vector2(layer.tiles[0], layer.tiles[1]) },
     uCryo: { value: new THREE.Color(PALETTE.cryo) },
     uBone: { value: new THREE.Color(PALETTE.bone) },
@@ -105,7 +106,7 @@ export function Machine({ segments, coilSegments }: MachineProps) {
           anchorPoint[1] = lift;
           anchorPoint[2] = radius * Math.sin(phi);
         } else {
-          skeinPoint(layer.rho, Math.PI * 0.5, phi, anchorPoint);
+          skeinPoint(layer.rho, Math.PI * (0.3 + layerIndex * 0.09), phi, anchorPoint);
         }
       }
       projected.set(anchorPoint[0], anchorPoint[1], anchorPoint[2]).project(camera);

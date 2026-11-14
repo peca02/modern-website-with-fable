@@ -25,11 +25,13 @@ export function LayerLabels() {
           />
           <span
             data-label-index
-            className="type-micro absolute -top-2 left-3 transition-colors duration-300 ease-reveal group-data-[active=true]:text-plasma lg:hidden"
+            className="type-micro absolute -top-2 left-3 transition-colors duration-300 ease-reveal group-data-[active=true]:text-plasma lg:group-data-[active=true]:hidden"
           >
             {layerIndexLabel(index)}
           </span>
-          <span className={`absolute bottom-1 left-0 hidden w-px lg:block ${STEMS[index]}`}>
+          <span
+            className={`absolute bottom-1 left-0 hidden w-px opacity-0 transition-opacity duration-300 ease-reveal group-data-[active=true]:opacity-100 lg:block ${STEMS[index]}`}
+          >
             <span data-label-stem className="absolute inset-0 origin-bottom bg-current opacity-60" />
             <span className="absolute left-0 top-0 -mt-2 flex items-start gap-3 group-data-[flip=true]:left-auto group-data-[flip=true]:right-0 group-data-[flip=true]:flex-row-reverse group-data-[flip=true]:text-right">
               <span

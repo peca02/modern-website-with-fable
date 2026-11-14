@@ -28,10 +28,13 @@ function sample(track: Track, t: number): number {
  * 3 ignition, 4 inside, 5 yield, 6 tie-in. Camera tracks are an orbit around a
  * target: azimuth and elevation in radians, distance in world units.
  */
-const DISTANCE: Track = [[0, 9.6], [0.8, 8.4], [1.3, 5.0], [1.8, 5.4], [2.1, 8.8], [2.9, 8.2], [3.25, 7.6], [3.9, 6.0], [5.1, 7.2], [5.9, 7.2], [6.45, 12.5], [7, 11.5]];
+const DISTANCE: Track = [[0, 10.6], [0.8, 8.8], [1.3, 5.0], [1.8, 5.4], [2.1, 14.5], [2.9, 13.5], [3.25, 7.6], [3.9, 6.0], [5.1, 7.2], [5.9, 7.2], [6.45, 12.5], [7, 11.5]];
 const ELEVATION: Track = [[0, 0.31], [1.3, 0.15], [2.1, 0.44], [2.9, 0.36], [3.3, 0.1], [3.9, 0.05], [5.1, 0.02], [5.9, 0.02], [6.5, 0.16], [7, 0.12]];
 const AZIMUTH: Track = [[0, 0], [1.3, 0.75], [2.0, 0.5], [3.0, 1.05], [3.4, 1.5], [3.9, 1.72], [5.0, 0], [6, 0], [7, 0.35]];
-const TARGET_REACH: Track = [[0, 0], [1.3, 0.78], [1.8, 0.7], [2.1, 0.12], [3.0, 0.18], [3.3, 0], [7, 0]];
+const TARGET_REACH: Track = [[0, 0], [1.3, 0.78], [1.8, 0.7], [2.1, 0], [7, 0]];
+// Where the subject sits in the frame: world units to the right and up, at the target's depth.
+const SHIFT: Track = [[0, 0], [0.9, 0], [1.3, 1.1], [1.85, 1.1], [2.1, 3.1], [2.95, 3.1], [3.25, 0], [7, 0]];
+const RISE: Track = [[0, 1.0], [0.8, 0.5], [1.3, 0], [7, 0]];
 const TARGET_Y: Track = [[0, 0.1], [1.3, 0], [5.9, 0], [6.5, -0.9], [7, -1.1]];
 const TARGET_PAN: Track = [[5.0, 0], [5.15, -2.6], [5.92, 2.6], [6.3, 0]];
 const FOV: Track = [[0, 36], [3.88, 36], [4.1, 64], [4.88, 64], [5.12, 34], [7, 34]];
@@ -100,6 +103,17 @@ export function Director() {
       rig.cameraTarget.y + Math.sin(elevation) * distance,
       rig.cameraTarget.z + Math.cos(azimuth) * Math.cos(elevation) * distance,
     );
+
+    // Truck the camera so the subject leaves room for the copy; on portrait screens it goes up instead of sideways.
+    const portrait = clamp((1.1 - store.viewport.aspect) / 0.5);
+    const shift = sample(SHIFT, t);
+    const truckX = -shift * (1 - portrait);
+    const truckY = -(sample(RISE, t) + shift * portrait * 0.55) * fit;
+    const dx = Math.cos(azimuth) * truckX - Math.sin(azimuth) * Math.sin(elevation) * truckY;
+    const dy = Math.cos(elevation) * truckY;
+    const dz = -Math.sin(azimuth) * truckX - Math.cos(azimuth) * Math.sin(elevation) * truckY;
+    rig.cameraTarget.set(rig.cameraTarget.x + dx, rig.cameraTarget.y + dy, rig.cameraTarget.z + dz);
+    rig.cameraPosition.set(rig.cameraPosition.x + dx, rig.cameraPosition.y + dy, rig.cameraPosition.z + dz);
 
     const inside = sample(INSIDE, t);
     if (inside > 0) {
